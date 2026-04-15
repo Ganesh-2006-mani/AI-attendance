@@ -1,0 +1,16 @@
+body {
+    text-align: center;
+    font-family: Arial;
+    background: #0f172a;
+    color: white;
+}
+
+input, button {
+    padding: 10px;
+    margin: 10px;
+}
+
+canvas {
+    max-width: 600px;
+    margin: auto;
+}
