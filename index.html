@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Attendance System</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<h1>AI Attendance System</h1>
+
+<input type="number" id="total" placeholder="Total Classes">
+<input type="number" id="attended" placeholder="Attended Classes">
+<input type="number" id="future" placeholder="Upcoming Classes">
+
+<button onclick="calculate()">Analyze</button>
+
+<h2 id="result"></h2>
+<h3 id="suggestion"></h3>
+<h3 id="pattern"></h3>
+
+<canvas id="chart"></canvas>
+
+<script src="script.js"></script>
+</body>
+</html>
