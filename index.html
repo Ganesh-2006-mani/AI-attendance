@@ -1,26 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>AI Attendance System</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Attendance Smart Assistant</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+    <div class="container">
+        <h1>Smart Attendance AI</h1>
+        
+        <div class="input-section">
+            <input type="number" id="total" placeholder="Total Classes Done">
+            <input type="number" id="attended" placeholder="Classes Attended">
+            <input type="number" id="upcoming" placeholder="Upcoming Classes">
+            <button onclick="processAttendance()">Analyze & Predict</button>
+        </div>
 
-<h1>AI Attendance System</h1>
-
-<input type="number" id="total" placeholder="Total Classes">
-<input type="number" id="attended" placeholder="Attended Classes">
-<input type="number" id="future" placeholder="Upcoming Classes">
-
-<button onclick="calculate()">Analyze</button>
-
-<h2 id="result"></h2>
-<h3 id="suggestion"></h3>
-<h3 id="pattern"></h3>
-
-<canvas id="chart"></canvas>
-
-<script src="script.js"></script>
+        <div class="dashboard">
+            <div class="card">
+                <h3>Prediction & Insight</h3>
+                <p id="predictionText">Enter data to see results.</p>
+                <p id="decisionText" class="decision"></p>
+                <p id="patternText" class="pattern"></p>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="historyChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>
