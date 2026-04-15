@@ -1,61 +1,53 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import numpy as np
 from sklearn.linear_model import LinearRegression
 
 app = Flask(__name__)
+CORS(app)
 
-# Train model (simple but valid)
-X = []
-y = []
-
-for total in range(50, 101, 5):
-    for attended in range(30, total):
-        X.append([total, attended])
-        y.append((attended / total) * 100)
-
-X = np.array(X)
-y = np.array(y)
-
-model = LinearRegression()
-model.fit(X, y)
-
-
-@app.route('/predict', methods=['POST'])
+@app.route('/predict', method=['POST'])
 def predict():
-    data = request.get_json()
+    data = request.json
+    total = int(data.get('total'))
+    attended = int(data.get('attended'))
+    future = int(data.get('future'))
 
-    total = int(data['total'])
-    attended = int(data['attended'])
-    future = int(data['future'])
+    # 1. Simple Linear Regression Model
+    # Training on current state to project future
+    X = np.array([[total]]) 
+    y = np.array([attended])
+    model = LinearRegression().fit(X, y)
+    
+    # Predict future attendance if current ratio continues
+    future_total = total + future
+    predicted_attended = model.predict([[future_total]])[0]
+    predicted_pct = (predicted_attended / future_total) * 100
 
-    # Prediction
-    future_pred = model.predict([[total + future, attended + future]])[0]
+    # 2. Decision Logic
+    current_pct = (attended / total) * 100
+    decision = ""
+    warning = ""
 
-    required = 75
-    current = (attended / total) * 100
-
-    # DECISION SYSTEM
-    if current < required:
-        needed = 0
-        while ((attended + needed) / (total + needed)) * 100 < required:
-            needed += 1
-        decision = f"❌ Attend next {needed} classes minimum"
-
+    if current_pct < 75:
+        # Formula: (attended + x) / (total + x) = 0.75
+        # x = (0.75 * total - attended) / (1 - 0.75)
+        needed = int(np.ceil((0.75 * total - attended) / 0.25))
+        decision = f"You need to attend {max(0, needed)} more classes consecutively to reach 75%."
     else:
-        bunk = 0
-        while ((attended) / (total + bunk)) * 100 >= required:
-            bunk += 1
-        decision = f"✅ You can bunk {bunk-1} classes safely"
+        # Formula: attended / (total + x) = 0.75
+        # x = (attended / 0.75) - total
+        can_skip = int(np.floor((attended / 0.75) - total))
+        decision = f"You can safely bunk {max(0, can_skip)} classes."
 
-    # Risk Warning
-    if future_pred < required:
-        decision += " ⚠️ Future risk detected!"
+    if predicted_pct < 75:
+        warning = "WARNING: Your predicted future attendance falls below 75%!"
 
     return jsonify({
-        "prediction": round(future_pred, 2),
-        "decision": decision
+        "predicted_pct": round(predicted_pct, 2),
+        "decision": decision,
+        "warning": warning
     })
 
-
-if __name__ == "__main__":
-    app.run(debug=True)
+if __name__ == '__main__':
+    app.run(port=5000, debug=True)
